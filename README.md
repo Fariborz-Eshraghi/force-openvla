@@ -40,44 +40,7 @@ Force-OpenVLA separates high-level reasoning from low-level contact response:
 
 ## Fast-Slow Tactile VLA Architecture
 
-```mermaid
-flowchart LR
-  subgraph slow["Slow semantic loop - target 2-3 Hz"]
-    rgb["RGB cameras<br/>agent + wrist"] --> vla
-    language["Language instruction"] --> vla
-    state["Robot state"] --> vla
-    vla["LoRA OpenVLA<br/>semantic planner"] --> chunk["Candidate action chunk<br/>delta pose + gripper<br/>optional force target"]
-    chunk --> safety["Contact-aware safety filter<br/>risk correction + smoothing"]
-  end
-
-  subgraph prediction["Predictive contact check"]
-    tactile["Tactile sensing<br/>force, shear, pressure, images"] --> encoder["Tactile encoder<br/>compressed contact history"]
-    encoder --> world["Predictive contact-world model<br/>contact state, force trend,<br/>slip and deformation risk"]
-  end
-
-  subgraph fast["Fast reflex and post-action check"]
-    reflex["Fast tactile reflex<br/>target 50-200+ Hz"] --> hand["Robot hand"]
-    hand --> checker["VLA checker<br/>visual + tactile outcome"]
-    checker -- failure --> correction["Corrective instruction<br/>grip harder, move slower, ..."]
-  end
-
-  chunk --> world
-  world --> safety
-  safety --> reflex
-  tactile -. live tactile stream .-> reflex
-  correction --> vla
-
-  classDef semantic fill:#dcecff,stroke:#476d96,color:#17212b;
-  classDef tactileNode fill:#ffe2e2,stroke:#c63c3c,color:#261919;
-  classDef safetyNode fill:#fff0c7,stroke:#99712e,color:#292116;
-  classDef stateNode fill:#dff3df,stroke:#568356,color:#182318;
-  classDef hardware fill:#dceff2,stroke:#4f7a82,color:#172326;
-  class rgb,vla semantic;
-  class tactile,encoder,world,reflex tactileNode;
-  class safety,correction safetyNode;
-  class language,state,chunk stateNode;
-  class hand,checker hardware;
-```
+![Force-OpenVLA fast-slow tactile architecture](assets/force-openvla-architecture.png)
 
 The diagram is the complete research architecture. The current repository
 implements the simulation, dataset, OpenVLA-OFT fine-tuning, action-chunk
