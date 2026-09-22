@@ -608,7 +608,7 @@ def main() -> None:
             f"Incomplete OFT checkpoint {args.checkpoint}; missing: {', '.join(missing)}"
         )
 
-    sys.argv.append("panda_d3")
+    sys.argv.append(args.dataset_name)  # platform detection matches on the full "panda_pickplace_dN" name too
     sys.path.insert(0, str(args.openvla_repo))
 
     import tensorflow as tf
